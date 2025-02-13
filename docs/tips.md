@@ -65,7 +65,7 @@ Moved to: https://github.com/yazi-rs/plugins/tree/main/smart-enter.yazi
 
 ## Smart paste: `paste` files without entering the directory {#smart-paste}
 
-Save these lines as `~/.config/yazi/plugins/smart-paste.yazi/init.lua`:
+Save these lines as `~/.config/yazi/plugins/smart-paste.yazi/main.lua`:
 
 ```lua
 --- @sync entry
@@ -100,7 +100,7 @@ desc = "Paste into the hovered directory or CWD"
 
 ## Smart tab: create a tab and enter the hovered directory {#smart-tab}
 
-Save these lines as `~/.config/yazi/plugins/smart-tab.yazi/init.lua`:
+Save these lines as `~/.config/yazi/plugins/smart-tab.yazi/main.lua`:
 
 ```lua
 --- @sync entry
@@ -123,7 +123,7 @@ desc = "Create a tab and enter the hovered directory"
 
 ## Smart switch: create tab if the tab being switched to does not exist {#smart-switch}
 
-Save these lines as `~/.config/yazi/plugins/smart-switch.yazi/init.lua`:
+Save these lines as `~/.config/yazi/plugins/smart-switch.yazi/main.lua`:
 
 ```lua
 --- @sync entry
@@ -146,7 +146,7 @@ Then bind it to the <kbd>2</kbd> key, in your `keymap.toml`:
 ```toml
 [[manager.prepend_keymap]]
 on   = "2"
-run  = "plugin smart-switch --args=1"
+run  = "plugin smart-switch 1"
 desc = "Switch or create tab 2"
 ```
 
@@ -154,7 +154,7 @@ desc = "Switch or create tab 2"
 
 You can subscribe to directory change events through the [`cd` event provided by DDS](/docs/dds#cd), and then do any action you want, such as setting different sorting methods for specific directories.
 
-The following code demonstrates making the `Downloads` directory to sort by modification time, while others are sorted alphabetically. Save these lines as `~/.config/yazi/plugins/folder-rules.yazi/init.lua`:
+The following code demonstrates making the `Downloads` directory to sort by modification time, while others are sorted alphabetically. Save these lines as `~/.config/yazi/plugins/folder-rules.yazi/main.lua`:
 
 ```lua
 local function setup()
@@ -200,9 +200,7 @@ Original post: https://github.com/sxyazi/yazi/discussions/327
 ```toml
 [[manager.prepend_keymap]]
 on  = "<C-n>"
-run = '''
-	shell 'dragon -x -i -T "$1"'
-'''
+run = 'shell -- dragon -x -i -T "$1"'
 ```
 
 ## Linux: Copy selected files to the system clipboard while yanking {#selected-files-to-clipboard}
@@ -212,9 +210,7 @@ Yazi allows multiple commands to be bound to a single key, so you can set <kbd>y
 ```toml
 [[manager.prepend_keymap]]
 on  = "y"
-run = [ '''
-	shell 'echo "$@" | xclip -i -selection clipboard -t text/uri-list'
-''', "yank" ]
+run = [ 'shell -- echo "$@" | xclip -i -selection clipboard -t text/uri-list', "yank" ]
 ```
 
 The above is available on X11, there is also a Wayland version (Thanks [@hurutparittya for sharing this](https://discord.com/channels/1136203602898194542/1136203604076802092/1188498323867455619) in Yazi's discord server):
@@ -222,9 +218,7 @@ The above is available on X11, there is also a Wayland version (Thanks [@hurutpa
 ```toml
 [[manager.prepend_keymap]]
 on  = "y"
-run = [ '''
-	shell 'for path in "$@"; do echo "file://$path"; done | wl-copy -t text/uri-list'
-''', "yank" ]
+run = [ 'shell -- for path in "$@"; do echo "file://$path"; done | wl-copy -t text/uri-list', "yank" ]
 ```
 
 ## `cd` back to the root of the current Git repository {#cd-to-git-root}
@@ -232,9 +226,7 @@ run = [ '''
 ```toml
 [[manager.prepend_keymap]]
 on = [ "g", "r" ]
-run = '''
-	shell 'ya emit cd "$(git rev-parse --show-toplevel)"'
-'''
+run = 'shell -- ya emit cd "$(git rev-parse --show-toplevel)"'
 ```
 
 Credits to [@aidanzhai for sharing it](https://t.me/yazi_rs/3325/15373) in Yazi's telegram group.
@@ -272,7 +264,7 @@ Moved to: https://github.com/yazi-rs/plugins/tree/main/hide-preview.yazi
 
 ## File navigation wraparound {#navigation-wraparound}
 
-Save these lines as `~/.config/yazi/plugins/arrow.yazi/init.lua`:
+Save these lines as `~/.config/yazi/plugins/arrow.yazi/main.lua`:
 
 ```lua
 --- @sync entry
@@ -290,16 +282,16 @@ Then bind it for <kbd>k</kbd> and <kbd>j</kbd> key, in your `keymap.toml`:
 ```toml
 [[manager.prepend_keymap]]
 on  = "k"
-run = "plugin arrow --args=-1"
+run = "plugin arrow -1"
 
 [[manager.prepend_keymap]]
 on  = "j"
-run = "plugin arrow --args=1"
+run = "plugin arrow 1"
 ```
 
 ## Navigation in the parent directory without leaving the CWD {#parent-arrow}
 
-Save these lines as `~/.config/yazi/plugins/parent-arrow.yazi/init.lua`:
+Save these lines as `~/.config/yazi/plugins/parent-arrow.yazi/main.lua`:
 
 <Tabs>
   <TabItem value="classic" label="Classic" default>
@@ -353,16 +345,14 @@ Then bind it for <kbd>K</kbd> and <kbd>J</kbd> key, in your `keymap.toml`:
 ```toml
 [[manager.prepend_keymap]]
 on  = "K"
-run = "plugin parent-arrow --args=-1"
+run = "plugin parent-arrow -1"
 
 [[manager.prepend_keymap]]
 on  = "J"
-run = "plugin parent-arrow --args=1"
+run = "plugin parent-arrow 1"
 ```
 
 ## Confirm before quitting if multiple tabs are open {#confirm-quit}
-
-**Note**: This plugin currently only works with the nightly version of Yazi.
 
 Save these lines as `~/.config/yazi/plugins/confirm-quit.yazi/main.lua`:
 
@@ -462,9 +452,7 @@ end, 500, Header.LEFT)
 ```toml
 [[manager.prepend_keymap]]
 on = "<C-p>"
-run = '''
-  shell 'qlmanage -p "$@"'
-'''
+run = 'shell -- qlmanage -p "$@"'
 ```
 
 Credits to [@UncleGravity for sharing it](https://discord.com/channels/1136203602898194542/1146658361740369960/1293471643959558156) in Yazi's discord server.
@@ -559,12 +547,9 @@ To send selected files using Thunderbird, with a keybinding <kbd>Ctrl</kbd> + <k
 # ~/.config/yazi/keymap.toml
 [[manager.prepend_keymap]]
 on  = "<C-e>"
-run = '''
-	shell '
-		paths=$(for p in "$@"; do echo "$p"; done | paste -s -d,)
-		quoted="'\'$paths\''"
-		thunderbird -compose "attachment=$quoted"
-	'
+run = '''shell --
+	paths=$(for p in "$@"; do echo "$p"; done | paste -s -d,)
+	thunderbird -compose "attachment='$paths'"
 '''
 ```
 

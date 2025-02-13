@@ -3,6 +3,9 @@ sidebar_position: 1
 description: How to install Yazi on various operating systems.
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 # Installation
 
 To use Yazi, you must have the following prerequisites installed:
@@ -286,6 +289,32 @@ Note that these dependencies are quite old on some Debian/Ubuntu versions and ma
 
 If you know how to package Yazi for Debian/Ubuntu and would like to help us submit it, please [file an issue](https://github.com/sxyazi/yazi/issues/new/choose).
 
+## Flatpak
+
+:::warning
+The Flatpak edition comes with many limitations due to sandboxing - see its [README](https://github.com/flathub/io.github.sxyazi.yazi) for details.
+
+Power users are recommended to transition to an alternative installation to avoid unexpected breakages.
+:::
+
+<a href="https://flathub.org/apps/io.github.sxyazi.yazi">
+	<img height="40" alt="Download on Flathub" src="https://flathub.org/api/badge?locale=en" />
+</a>
+
+After [installation](https://flathub.org/apps/io.github.sxyazi.yazi), you can run Yazi in the terminal with:
+
+```sh
+flatpak run io.github.sxyazi.yazi
+```
+
+You may want to create a shell alias:
+
+```sh
+alias yazi="flatpak run io.github.sxyazi.yazi"
+```
+
+See the Flatpak edition's [README](https://github.com/flathub/io.github.sxyazi.yazi) for more information.
+
 ## AOSC OS {#aosc}
 
 ```sh
@@ -342,16 +371,45 @@ rustup update
 
 Clone the repository and build Yazi:
 
+<Tabs>
+  <TabItem value="non-windows" label="non-Windows" default>
+
 ```sh
 git clone https://github.com/sxyazi/yazi.git
 cd yazi
 cargo build --release --locked
 ```
 
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+
+```sh
+git clone https://github.com/sxyazi/yazi.git
+cd yazi
+cargo build --profile release-windows --locked
+```
+
+  </TabItem>
+</Tabs>
+
 Then, add `yazi` and `ya` to your `$PATH`:
+
+<Tabs>
+  <TabItem value="non-windows" label="non-Windows" default>
 
 ```sh
 mv target/release/yazi target/release/ya /usr/local/bin/
 ```
+
+  </TabItem>
+  <TabItem value="windows" label="Windows">
+
+```sh
+move target\release-windows\yazi.exe "%ProgramFiles%\yazi.exe"
+move target\release-windows\ya.exe "%ProgramFiles%\ya.exe"
+```
+
+  </TabItem>
+</Tabs>
 
 If it fails to build, please check if `make` and `gcc` is installed on your system.

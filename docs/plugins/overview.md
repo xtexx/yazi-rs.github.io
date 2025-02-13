@@ -13,7 +13,7 @@ import TabItem from '@theme/TabItem';
 You can extend Yazi's functionality through Lua plugins, which need to be placed in the `plugins` subdirectory of Yazi's configuration directory, so either:
 
 - `~/.config/yazi/plugins/` on Unix-like systems.
-- `C:\Users\USERNAME\AppData\Roaming\yazi\config\plugins\` on Windows.
+- `%AppData%\yazi\config\plugins\` on Windows.
 
 ```
 ~/.config/yazi/
@@ -28,14 +28,14 @@ Each plugin is a directory with a [kebab-case](https://developer.mozilla.org/en-
 
 ```
 ~/.config/yazi/plugins/bar.yazi/
-├── init.lua
+├── main.lua
 ├── README.md
 └── LICENSE
 ```
 
 Where:
 
-- `init.lua` is the entry point of this plugin.
+- `main.lua` is the entry point of this plugin.
 - `README.md` is the documentation of this plugin.
 - `LICENSE` is the license file for this plugin.
 
@@ -44,53 +44,45 @@ Where:
 A plugin has two usages:
 
 - [Functional plugin](#functional-plugin): Bind the `plugin` command to a key in `keymap.toml`, and activate it by pressing the key.
-- [Custom previewers, preloaders](/docs/configuration/yazi#plugin): Configure them as `previewers` or `preloaders` in your `[plugin]` of `yazi.toml` file.
+- [Custom previewers, preloaders](/docs/configuration/yazi#plugin): Configure them as previewers or preloaders under `[plugin]` of your `yazi.toml`.
 
 ### Functional plugin {#functional-plugin}
 
 You can bind a `plugin` command to a specific key in your `keymap.toml` with:
 
-| Argument/Option | Description                                 |
-| --------------- | ------------------------------------------- |
-| `[name]`        | The name of the plugin to run.              |
-| `--args=[args]` | Shell-style arguments passed to the plugin. |
+| Argument/Option | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| `[name]`        | Required, the name of the plugin to run.              |
+| `[args]`        | Optional, shell-style arguments passed to the plugin. |
 
-For example, `plugin test --args='hello --foo --bar=baz'` will run the `test` plugin with the arguments `hello --foo --bar=baz` in a sync context.
+For example, `plugin test -- foo --bar --baz=qux` will run the `test` plugin with the arguments `foo --bar --baz=qux` in a sync context.
 
 To access the arguments in the plugin, use `job.args`:
 
-TODO: add doc about `@sync` (`--sync`)
-
 ```lua
---- @sync entry
--- ~/.config/yazi/plugins/test.yazi/init.lua
+-- ~/.config/yazi/plugins/test.yazi/main.lua
 return {
 	entry = function(self, job)
-		ya.err(job.args[1])  -- "hello"
-		ya.err(job.args.foo) -- true
-		ya.err(job.args.bar) -- "baz"
+		ya.dbg(job.args[1])  -- "foo"
+		ya.dbg(job.args.bar) -- true
+		ya.dbg(job.args.baz) -- "qux"
 	end,
 }
 ```
 
-Note that currently Yazi only supports positional arguments (`hello`) and named arguments (`--foo`, `--bar`), it does not support shorthand arguments like `-f` or `-b`.
+Note that currently Yazi only supports positional arguments (`foo`) and named arguments (`--bar`), it does not support shorthand arguments like `-a`.
 
-These will be treated as positional arguments, but as Yazi adds support for shorthands in the future, their behavior will change. So please avoid using them to prevent any potential conflicts.
+Shorthands will be treated as positional arguments at the moment, but as Yazi adds support for it in the future, their behavior will change. So please avoid using them to prevent any potential conflicts.
 
 ## Sync vs Async {#sync-vs-async}
 
-The plugin system is designed with an async-first philosophy. Therefore, unless specifically specified, such as the `--sync` for the `plugin` command, all plugins run in an async context.
+The plugin system is designed with an async-first philosophy. Therefore, unless specifically specified, such as the [`@sync` annotation](/docs/plugins/overview#@sync), all plugins run in an async context.
 
-There is one exception - all `init.lua` are synchronous, which includes:
-
-- The `init.lua` for Yazi itself, i.e. `~/.config/yazi/init.lua`.
-- The `init.lua` for each plugin, e.g. `~/.config/yazi/plugins/bar.yazi/init.lua`.
-
-This is because `init.lua` is commonly used to initialize plugin configurations, and this process is synchronous:
+There is one exception: the user's `init.lua` is synchronous, since `init.lua` is often used to initialize plugin configurations:
 
 ```lua
 -- ~/.config/yazi/init.lua
-require("bar"):setup {
+require("my-plugin"):setup {
 	key1 = "value1",
 	key2 = "value2",
 	-- ...
@@ -98,7 +90,7 @@ require("bar"):setup {
 ```
 
 ```lua
--- ~/.config/yazi/plugins/bar.yazi/init.lua
+-- ~/.config/yazi/plugins/my-plugin.yazi/main.lua
 return {
 	setup = function(state, opts)
 		-- Save the user configuration to the plugin's state
@@ -110,17 +102,18 @@ return {
 
 ### Sync context {#sync-context}
 
-The sync context accompanies the entire app lifecycle, which is active during UI rendering (UI plugins), and on executing sync functional plugins (`plugin` command with `--sync`).
+The sync context accompanies the entire app lifecycle, which is active during UI rendering (UI plugins), and on executing [sync functional plugins](/docs/plugins/overview#@sync).
 
 For better performance, the sync context is created only at the app's start and remains singular throughout. Thus, plugins running within this context share states,
 prompting plugin developers to use plugin-specific state persistence for their plugins to prevent global space contamination:
 
 ```lua
--- ~/.config/yazi/test.yazi/init.lua
+--- @sync entry
+-- ~/.config/yazi/test.yazi/main.lua
 return {
   entry = function(state)
     state.i = state.i or 0
-    ya.err("i = " .. state.i)
+    ya.dbg("i = " .. state.i)
 
     state.i = state.i + 1
   end,
@@ -128,7 +121,7 @@ return {
 ```
 
 Yazi initializes the `state` for each _sync_ plugin before running, and it exists independently for them throughout the entire lifecycle.
-Do the `plugin --sync test` three times, and you will see the log output:
+Do the `plugin test` three times, and you will see the log output:
 
 ```sh
 i = 0
@@ -145,7 +138,7 @@ In this context, you can use all the async functions supported by Yazi, and it o
 You can also obtain [a small amount](#sendable) of app data from the sync context by calling a "sync function":
 
 ```lua
--- ~/.config/yazi/plugins/my-async-plugin.yazi/init.lua
+-- ~/.config/yazi/plugins/my-async-plugin.yazi/main.lua
 local set_state = ya.sync(function(state, a)
 	-- You can get/set the state of the plugin through `state` parameter
 	-- in the `sync()` block
@@ -161,8 +154,8 @@ end)
 
 return {
 	entry = function()
-		set_state("this is a")
-		local h = get_state("this is b")
+		set_state("hello from a")
+		local h = get_state("hello from b")
 		-- Do some time-consuming work, such as reading file, network request, etc.
 		-- It will execute concurrently with the main thread
 	end,
@@ -179,6 +172,42 @@ if some_condition then
 		-- ...
 	end)
 end
+```
+
+## Annotations {#annotations}
+
+Each plugin can contain zero or more annotations that specify the behavior of the plugin during runtime.
+
+Each annotation starts with `---`, followed by `@` and the annotation name, and ends with the annotation's value.
+
+These annotations _must_ be at the very top of the file, with no content before them, and no non-annotation content should appear between annotations.
+
+### `@sync` {#@sync}
+
+Specifies that a method in the plugin runs in a async context instead of the default async context. Available values:
+
+- `entry`: Run the `entry` method in a sync context.
+
+For example:
+
+```lua
+--- @sync entry
+return {
+	entry = function() end
+}
+```
+
+### `@since` {#@since}
+
+Specifies the minimum Yazi version that the plugin supports.
+
+If specified, and the user's Yazi version is lower than the specified one, an error will be triggered to prompt the user to upgrade their Yazi version, preventing the plugin from being executed accidentally:
+
+```lua
+--- @since 25.2.13
+return {
+	--- ...
+}
 ```
 
 ## Interface {#interface}
@@ -233,6 +262,7 @@ local M = {}
 
 function M:preload(job)
 	-- ...
+	return false, Err("some error")
 end
 
 return M
@@ -247,16 +277,14 @@ It receives a `job` parameter, which is a table:
 | `file` | [File](/docs/plugins/types#shared.file) to be preloaded.         |
 | `skip` | Always `0`                                                       |
 
-And has the following return values:
+And returns a `(complete, err)`:
 
-| Binary | Decimal |                         |
-| ------ | ------- | ----------------------- |
-| `0 0`  | 0       | Failure, don't continue |
-| `0 1`  | 1       | Success, don't continue |
-| `1 0`  | 2       | Failure, continue       |
-| `1 1`  | 3       | Success, continue       |
+- `complete`: Required, Whether the preloading is complete, which is a boolean.
+  - `true`: Marks the task as complete, and the task will not be called again.
+  - `false`: Marks the task as incomplete, and the task will be retried until it's complete (returns `true`).
+- `err`: Optional, the error to be logged.
 
-When "continue" is set, the preloader can reload the files that have already been loaded at the next time point, such as when the user scrolls, leading to a page switch. This is usually done for the either:
+When `complete = false`, the preloader will be re-triggered at the next time point, such as when the user scrolls leading to a page switch. This is usually done for either:
 
 - Retrying in case of file loading failure
 - Refreshing the file status upon successful loading
@@ -288,7 +316,7 @@ If you have no experience with Lua, you can quickly get started through https://
 If you want to debug some runtime data, use [`ya.dbg()`](/docs/plugins/utils#ya.dbg) and [`ya.err()`](/docs/plugins/utils#ya.err) to print what you want to debug to either:
 
 - `~/.local/state/yazi/yazi.log` on Unix-like systems.
-- `C:\Users\USERNAME\AppData\Roaming\yazi\state\yazi.log` on Windows.
+- `%AppData%\yazi\state\yazi.log` on Windows.
 
 Make sure to set the `YAZI_LOG` environment variable before starting Yazi:
 
