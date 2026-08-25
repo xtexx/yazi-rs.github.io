@@ -141,6 +141,7 @@ Clipboard:
 `paste` enhancements:
 
 - [smart-paste.yazi](https://github.com/yazi-rs/plugins/tree/main/smart-paste.yazi) - Paste files into the hovered directory or to the CWD if hovering over a file.
+- [merge-paste.yazi](https://github.com/PHONE1X/far-too-yazi/tree/main/plugins/merge-paste) - Conflict-aware paste (Overwrite/Merge/Skip/Rename) for name clashes.
 
 General action enhancements:
 
