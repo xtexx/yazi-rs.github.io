@@ -425,7 +425,7 @@ This page also includes a [nightly release](https://github.com/sxyazi/yazi/relea
 
 ## crates.io {#crates}
 
-Yazi is available on [crates.io](https://crates.io/). Due to [Cargo's limitations](https://github.com/rust-lang/cargo/issues/11599), they must be installed via [`yazi-build`](https://crates.io/crates/yazi-build).
+Yazi is available on [crates.io](https://crates.io/). Due to [Cargo's limitations](https://github.com/sxyazi/yazi/pull/3952), they must be installed via [`yazi-build`](https://crates.io/crates/yazi-build).
 
 To install Yazi, setup the latest stable Rust toolchain via [rustup](https://rustup.rs/):
 
