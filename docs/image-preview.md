@@ -70,18 +70,12 @@ You can verify this through [tmux/tmux#4104](https://github.com/tmux/tmux/issues
 
 ## Zellij users {#zellij}
 
-Zellij currently only supports the Sixel graphics format, so you will need a terminal that also supports Sixel.
+Zellij currently only supports the Kitty old protocol and Sixel graphics format, so you will need a terminal that also supports them.
 
 Note that, Zellij's Sixel implementation is quite buggy and has serious performance issues at the moment,
 causing noticeable lagginess when quickly switching between images, and sometimes even [image tearing](https://github.com/zellij-org/zellij/issues/2576#issuecomment-1707107473) or [not working at all](https://github.com/zellij-org/zellij/issues/2814#issuecomment-2318473921).
 
-This situation won't improve until Zellij enhances its Sixel implementation or [provides a passthrough mode](https://github.com/zellij-org/zellij/issues/775). If the image is a stronger need to you, consider running Yazi outside of Zellij or using Überzug++:
-
-```sh
-# Deceive Yazi into thinking you're running in kitty,
-# forcing it fallback to Überzug++ or Chafa
-TERM=xterm-kitty yazi
-```
+This situation won't improve until Zellij enhances its Sixel implementation or [provides a passthrough mode](https://github.com/zellij-org/zellij/issues/775). If the image is a stronger need to you, consider running Yazi outside of Zellij.
 
 ## Windows users {#windows}
 
