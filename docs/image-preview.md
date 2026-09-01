@@ -138,13 +138,13 @@ Run it in the terminal where you want to preview images, and you'll see output l
 ```sh
 ...
 Adapter
-    Adapter.matches: Kgp
+    Drivers.matches: Kgp
 ...
 ```
 
 which indicates the image protocol detected and used by Yazi:
 
-| `Adapter.matches` | Protocol                               | Notes                                                                                                      |
+| `Drivers.matches` | Protocol                               | Notes                                                                                                      |
 | ----------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `Kgp`             | [Kitty unicode placeholders][kgp]      | Ensure your terminal is up-to-date to support it                                                           |
 | `KgpOld`          | [Kitty old protocol][kgp-old]          | Doesn't work under `tmux` due to the limitations of the protocol itself                                    |

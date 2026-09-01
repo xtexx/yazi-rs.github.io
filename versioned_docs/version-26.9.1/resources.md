@@ -48,6 +48,7 @@ Jupyter notebooks:
 
 Misc:
 
+- [dog.yazi](https://github.com/edden27/dog.yazi) - Use `dog` for text/code yazi previews with syntax highlighting powered by tree-sitter. Faster than bat, with better theming.
 - [mdv-previewer.yazi](https://github.com/WhoSowSee/mdv-previewer.yazi) - A preview plugin for Text and Markdown files that uses [mdv](https://github.com/WhoSowSee/mdv) to render content
 - [rich-preview.yazi](https://github.com/AnirudhG07/rich-preview.yazi) - Preview Markdown, JSON, CSV, etc. using [rich-cli](https://github.com/textualize/rich-cli)
 - [vscode-git-gutter.yazi](https://github.com/ShikherVerma/yazi-plugins/tree/main/vscode-git-gutter.yazi) - Preview text and code with syntax highlighting, line numbers, and a VS Code style git change gutter.
@@ -76,6 +77,7 @@ Bookmarks:
 - [yamb.yazi](https://github.com/h-hg/yamb.yazi) - Yet another bookmarks plugins. It supports persistence, jumping by a key, jumping by [fzf](https://github.com/junegunn/fzf).
 - [bunny.yazi](https://github.com/stelcodes/bunny.yazi) - Bookmarks menu with both persistent and ephemeral bookmarks, fuzzy searching, going back to previous directory, and changing to a directory open in another tab.
 - [whoosh.yazi](https://github.com/WhoSowSee/whoosh.yazi) - Advanced bookmark manager with persistent/temporary bookmarks, directory history, fzf integration, path truncation, and cross-platform support. Jump between locations instantly with keys or fuzzy search.
+- [fzf-marks.yazi](https://github.com/razimantv/fzf-marks.yazi) - Brings [fzf-marks](https://github.com/urbainvaes/fzf-marks) style bookmark jumping into yazi. Create a bookmark, fuzzy-find a saved bookmark and jump to it without leaving yazi.
 
 Tabs:
 
@@ -141,6 +143,7 @@ Clipboard:
 `paste` enhancements:
 
 - [smart-paste.yazi](https://github.com/yazi-rs/plugins/tree/main/smart-paste.yazi) - Paste files into the hovered directory or to the CWD if hovering over a file.
+- [merge-paste.yazi](https://github.com/PHONE1X/far-too-yazi/tree/main/plugins/merge-paste) - Conflict-aware paste (Overwrite/Merge/Skip/Rename) for name clashes.
 
 General action enhancements:
 
@@ -152,6 +155,7 @@ UI enhancements:
 - [toggle-pane.yazi](https://github.com/yazi-rs/plugins/tree/main/toggle-pane.yazi) - Toggle the show, hide, and maximize states for different panes: parent, current, and preview.
 - [git.yazi](https://github.com/yazi-rs/plugins/tree/main/git.yazi) - Show the status of Git file changes as linemode in the file list.
 - [mount.yazi](https://github.com/yazi-rs/plugins/tree/main/mount.yazi) - A mount manager for Yazi, providing disk mount, unmount, and eject functionality.
+- [lsblk-mount.yazi](https://github.com/PHONE1X/lsblk-mount.yazi) - A fork of mount.yazi using lsblk's JSON device tree for more reliable discovery, plus a mountpoint column and error notifications.
 - [starship.yazi](https://github.com/Rolv-Apneseth/starship.yazi) - Starship prompt plugin for Yazi.
 - [omp.yazi](https://github.com/saumyajyoti/omp.yazi) - oh-my-posh prompt plugin for Yazi.
 - [yatline.yazi](https://github.com/imsi32/yatline.yazi) - Customize header-line and status-line with an easy configuration.
